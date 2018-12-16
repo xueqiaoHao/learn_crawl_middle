@@ -1,6 +1,7 @@
 package Spider.Middle.utils;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class IOUtil {
 			is=ReadConfigUtil.class.getClassLoader().getResourceAsStream(Filepath);
 		}
 		else{
-			
+			is=new FileInputStream(Filepath);
 		}
 		//3.正式进行文件读取
 		InputStreamReader isr=new InputStreamReader(is,StaticValue.defaultencoding);
@@ -32,13 +33,12 @@ public class IOUtil {
 	}
 	public static void main(String[] args) {
 		String Filepath="seeds.txt";
-		boolean isclasspath=true;
+		boolean isclasspath=false;
 		String charset=StaticValue.defaultencoding;
 		try {
 			List<String> linelist=readFileToList(Filepath,isclasspath,charset);
 			System.out.println(linelist);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 		}

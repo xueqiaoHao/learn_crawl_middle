@@ -8,6 +8,7 @@ package Spider.Middle.utils;
 public class StaticValue {
 	//根URL的静态常量定义
 	public static String rootUrl="http://news.youth.cn/gn/";
+	public static String rootTitle="中国青年网-国内新闻";
 	//默认编码设定
 	public static String defaultencoding="utf-8";
 }
