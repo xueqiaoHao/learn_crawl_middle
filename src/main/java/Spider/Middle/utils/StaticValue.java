@@ -11,4 +11,10 @@ public class StaticValue {
 	public static String rootTitle="中国青年网-国内新闻";
 	//默认编码设定
 	public static String defaultencoding="utf-8";
+	//设定分隔符
+	public static String sep_next_line="\n";
+	
+	public static String sep_semicolon=";";
+	
+	public static String sep_equals="=";
 }

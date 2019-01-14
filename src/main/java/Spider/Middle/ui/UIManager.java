@@ -1,9 +1,11 @@
 package Spider.Middle.ui;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import Spider.Middle.pojos.UrlTaskPojo;
+import Spider.Middle.schedule.TaskScheduleManager;
 import Spider.Middle.utils.IOUtil;
 import Spider.Middle.utils.StaticValue;
 
@@ -12,6 +14,7 @@ import Spider.Middle.utils.StaticValue;
  *@date 2018年12月14日下午5:19:41
  *看看commit之后再push的效果
  *该类作为用户接口的管理类，包括种子添加接口，种子添加的方式和不同来源
+ *某种程度讲这个是创建任务的类，让调度层有的可调度
  */
 public class UIManager {
 	public static UrlTaskPojo getRootUrlByDirect(){
@@ -40,11 +43,16 @@ public class UIManager {
 	}
 		return resultTaskPojo;
 }
+	//从这里调用taskschedule
+	public static void addSeedUrlToTaskSchedule() throws Exception{
+		String dataFilePath="seeds.txt";
+		List<UrlTaskPojo> urltaskpojo=UIManager.getRootUrlBySeedFile(dataFilePath,false);
+		TaskScheduleManager.addUrlPojoList(urltaskpojo);
+		
+	}
 	public static void main(String[] args) throws Exception {
-		String dataFilepath="seeds.txt";
-		List<UrlTaskPojo> urltaskpojo=UIManager.getRootUrlBySeedFile(dataFilepath,false);
-		for(UrlTaskPojo pojo:urltaskpojo){
-			System.out.println(pojo);
-		}
+		addSeedUrlToTaskSchedule();
+		System.out.println(TaskScheduleManager.todoTaskPojoList.size());
+		System.out.println("种子任务已添加到任务管理器中");
 	}
 }

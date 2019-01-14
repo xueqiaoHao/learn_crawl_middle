@@ -2,8 +2,12 @@ package Spider.Middle.utils;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +35,18 @@ public class IOUtil {
 		}
 		br.close();
 		return lineList;
+	}
+	public static BufferedReader getbr(String url,String charset) throws IOException{
+		URL urlObj=new URL(url);
+		URLConnection urlconnection=urlObj.openConnection();
+		BufferedReader br=getURLBufferedReader(urlconnection, charset);
+		return br;
+	}
+	public static BufferedReader getURLBufferedReader(URLConnection urlconnection,String charset) throws IOException{
+		InputStream is=urlconnection.getInputStream();
+		InputStreamReader isr=new InputStreamReader(is,StaticValue.defaultencoding);
+		BufferedReader br=new BufferedReader(isr);
+		return br;
 	}
 	public static void main(String[] args) {
 		String Filepath="seeds.txt";
