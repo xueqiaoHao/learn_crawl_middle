@@ -28,46 +28,24 @@ import org.apache.http.util.EntityUtils;
 public class WebpageDownloadUtil4HttpClient {
 	public static void main(String[] args) throws Exception {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-//        try {
-//            HttpGet httpGet = new HttpGet("http://httpbin.org/get");
-//            CloseableHttpResponse response1 = httpclient.execute(httpGet);
-//            try {
-//                System.out.println(response1.getStatusLine());
-//                HttpEntity entity1 = response1.getEntity();
-//                // do something useful with the response body
-//                // and ensure it is fully consumed
-//                EntityUtils.consume(entity1);
-//            } finally {
-//                response1.close();
-//            }
-//            
+        try {
+            HttpGet httpGet = new HttpGet("http://news.youth.cn/gn/");
+            CloseableHttpResponse response1 = httpclient.execute(httpGet);
             try {
-                HttpGet httpget = new HttpGet("http://httpbin.org/");
-
-                System.out.println("Executing request " + httpget.getRequestLine());
-
-                // Create a custom response handler
-                ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                    @Override
-                    public String handleResponse(
-                            final HttpResponse response) throws ClientProtocolException, IOException {
-                        int status = response.getStatusLine().getStatusCode();
-                        if (status >= 200 && status < 300) {
-                            HttpEntity entity = response.getEntity();
-                            return entity != null ? EntityUtils.toString(entity) : null;
-                        } else {
-                            throw new ClientProtocolException("Unexpected response status: " + status);
-                        }
-                    }
-
-                };
-                String responseBody = httpclient.execute(httpget, responseHandler);
-                System.out.println("----------------------------------------");
-                System.out.println(responseBody);
-            }
+                System.out.println(response1.getStatusLine());
+                HttpEntity entity1 = response1.getEntity();
+                // do something useful with the response body
+                // and ensure it is fully consumed  
+                System.out.println(EntityUtils.toString(entity1,"gbk"));
+                EntityUtils.consume(entity1);
+                
+            } finally {
+                response1.close();
+            }        
+        }
+          
          finally {
             httpclient.close();
         }
-    }
+        }
 }
