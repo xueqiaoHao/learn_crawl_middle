@@ -1,11 +1,13 @@
 package Spider.Middle.utils;
-
+/**
+@author Griezmann
+@version 2019年1月17日下午9:44:56
+*/
 public class test {
-	//测试更新情况
+
 	public static void main(String[] args) {
-		System.out.println("tell me why");
-		System.out.println("why");
+		// TODO Auto-generated method stub
+     System.out.println("adfsdf");
 	}
-	
-	//怎么么有呢
+
 }
