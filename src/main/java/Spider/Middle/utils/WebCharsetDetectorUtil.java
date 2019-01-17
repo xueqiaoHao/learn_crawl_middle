@@ -2,21 +2,23 @@ package Spider.Middle.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+
 /**
 @author hao
 @date 2018年12月26日下午3:17:16
 **/
 public class WebCharsetDetectorUtil {
-	static String regex="charset=[\"]*([\\s\\S]*?)[\">]";
+	static String meta_charset_regex="charset=[\"]*([\\s\\S]*?)[\">]";
 	public static String getCharset(String url) throws IOException{
 		String findCharset=null;
 		URL urlObj=new URL(url);
@@ -46,7 +48,7 @@ public class WebCharsetDetectorUtil {
 				//将读出来的内容转出小写
 				line=line.trim().toLowerCase();
 				if(line.contains("<meta")){
-				findCharset=RegexUtil.getMatchText(line, regex, 1);
+				findCharset=RegexUtil.getMatchText(line, meta_charset_regex, 1);
 				if(findCharset!=null){
 //					System.out.println("find_at_meta");
 					break;
@@ -64,6 +66,42 @@ public class WebCharsetDetectorUtil {
 	}
 		return findCharset;
 	}
+	public static String getCharsetHttpClient(HttpEntity entity,String defaultCharset) throws IOException {
+		  String findCharset=null;
+		  findCharset=EntityUtils.getContentCharSet(entity);
+		  if(findCharset==null) {
+			  System.out.println("come");
+			  //将流儿转化为字符数组
+			  byte[] contentByteArray=IOUtil.convertInputStreamToByteArray(entity.getContent());
+			  //将字符数组转为字符串
+			  String htmlSource=new String(contentByteArray,defaultCharset); 
+			  System.out.println(contentByteArray.length);
+			  //将字符串封装为Reader
+			  StringReader sr=new StringReader(htmlSource);
+			  BufferedReader br=new BufferedReader(sr); 
+				String line=null;
+				while((line=br.readLine())!=null){
+					//将读出来的内容转出小写
+					line=line.trim().toLowerCase();
+					if(line.contains("<meta")){
+					findCharset=RegexUtil.getMatchText(line, meta_charset_regex, 1);
+					if(findCharset!=null){
+//						System.out.println("find_at_meta");
+						break;
+					}
+					}
+					//charset一定在head中，如果在head中没有找到，那就是没有，就不要再找了
+					else if(line.contains("</head>")){
+						break;
+					}
+					
+				}
+				br.close();
+		  }
+		  System.out.println(findCharset);
+		  return findCharset==null? defaultCharset:findCharset ;
+	}
+	
 	public static void main(String[] args) throws IOException {
 //		String url="http://news.youth.cn/gn/";
 //		String url="https://www.qq.com/";

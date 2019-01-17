@@ -1,6 +1,7 @@
 package Spider.Middle.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +48,17 @@ public class IOUtil {
 		InputStreamReader isr=new InputStreamReader(is,StaticValue.defaultencoding);
 		BufferedReader br=new BufferedReader(isr);
 		return br;
+	}
+	public static byte[] convertInputStreamToByteArray(InputStream is) throws IOException {
+		//将输入的字节流转换为字节数组的形式
+		byte[] byteBuffer=new byte[4096];
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		int readLength=0;
+		while((readLength=is.read(byteBuffer))!=-1) {
+			bos.write(byteBuffer,0,readLength);
+		}
+		return bos.toByteArray();
+		
 	}
 	public static void main(String[] args) {
 		String Filepath="seeds.txt";

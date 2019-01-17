@@ -1,6 +1,8 @@
 package Spider.Middle.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,17 +28,67 @@ import org.apache.http.util.EntityUtils;
 @date 2019年1月14日下午9:46:20
 **/
 public class WebpageDownloadUtil4HttpClient {
+	static String meta_charset_regex="charset=[\"]*([\\s\\S]*?)[\">]";
+	public static String parseResponse(HttpEntity entity,String defaultCharset) throws IOException {
+		  String findCharset=null;
+		//将流儿转化为字符数组
+		  byte[] contentByteArray=IOUtil.convertInputStreamToByteArray(entity.getContent());
+		  findCharset=EntityUtils.getContentCharSet(entity);
+		  String htmlSource=null;
+		  if(findCharset==null) {	 
+			  //将字符数组转为字符串
+			  htmlSource=new String(contentByteArray,defaultCharset);  
+			  //将字符串封装为Reader
+			  StringReader sr=new StringReader(htmlSource);
+			  BufferedReader br=new BufferedReader(sr); 
+				String line=null;
+				while((line=br.readLine())!=null){
+					//将读出来的内容转出小写
+					line=line.trim().toLowerCase();
+					if(line.contains("<meta")){
+					findCharset=RegexUtil.getMatchText(line, meta_charset_regex, 1);
+					if(findCharset!=null){
+//						System.out.println("find_at_meta");
+						break;
+					}
+					}
+					//charset一定在head中，如果在head中没有找到，那就是没有，就不要再找了
+					else if(line.contains("</head>")){
+						break;
+					}
+					
+				}
+				br.close();
+				if(findCharset!=null&&findCharset!=defaultCharset) {
+				{
+					  return new String(contentByteArray,findCharset);
+				}
+				
+		  } else {
+			  return new String(contentByteArray,findCharset);
+		  }
+		  }
+		  return htmlSource;
+	}
 	public static void main(String[] args) throws Exception {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            HttpGet httpGet = new HttpGet("http://news.youth.cn/gn/");
+//        	String url="http://news.youth.cn/gn/";
+        	String url="https://www.baidu.com/";
+//        	String url="https://www.163.com/";
+            HttpGet httpGet = new HttpGet(url);
             CloseableHttpResponse response1 = httpclient.execute(httpGet);
             try {
                 System.out.println(response1.getStatusLine());
                 HttpEntity entity1 = response1.getEntity();
                 // do something useful with the response body
-                // and ensure it is fully consumed  
-                System.out.println(EntityUtils.toString(entity1,"gbk"));
+                // and ensure it is fully consumed 
+//                byte[] byteBuffer=IOUtil.convertInputStreamToByteArray(entity1.getContent());
+//                System.out.println(new String(byteBuffer,"gbk"));
+//                WebCharsetDetectorUtil.getCharsetHttpClient(entity1, StaticValue.defaultencoding);
+//                System.out.println(EntityUtils.toString(entity1,"gbk"));
+                String htmlsource=parseResponse(entity1, StaticValue.defaultencoding);
+                System.out.println(htmlsource);
                 EntityUtils.consume(entity1);
                 
             } finally {
