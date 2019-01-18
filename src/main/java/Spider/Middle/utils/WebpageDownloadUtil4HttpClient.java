@@ -59,45 +59,59 @@ public class WebpageDownloadUtil4HttpClient {
 					
 				}
 				br.close();
-				if(findCharset!=null&&findCharset!=defaultCharset) {
-				{
-					  return new String(contentByteArray,findCharset);
-				}
-				
-		  } else {
-			  return new String(contentByteArray,findCharset);
+//				if(findCharset!=null&&findCharset!=defaultCharset) {
+//				{
+//					  return new String(contentByteArray,findCharset);
+//				}
+//				
+//		  } else {
+//			  return new String(contentByteArray,findCharset);
+//		  }
 		  }
+		  //无论如何都得有个编码
+		  findCharset=(findCharset==null ? defaultCharset:findCharset);
+		  if(htmlSource==null || findCharset!=defaultCharset ) {
+			  htmlSource=new String(contentByteArray,findCharset);
 		  }
 		  return htmlSource;
 	}
+	
+	//封装httpclient自己的download方法
+	public static String download(String url) throws IOException {
+		 CloseableHttpClient httpclient = HttpClients.createDefault();
+		 String htmlsource=null;  
+		 try {
+	        	
+	            HttpGet httpGet = new HttpGet(url);
+	            CloseableHttpResponse response1 = httpclient.execute(httpGet);
+	            try {
+	                System.out.println(response1.getStatusLine());
+	                HttpEntity entity1 = response1.getEntity();
+	                // do something useful with the response body
+	                // and ensure it is fully consumed 
+//	                byte[] byteBuffer=IOUtil.convertInputStreamToByteArray(entity1.getContent());
+//	                System.out.println(new String(byteBuffer,"gbk"));
+//	                WebCharsetDetectorUtil.getCharsetHttpClient(entity1, StaticValue.defaultencoding);
+//	                System.out.println(EntityUtils.toString(entity1,"gbk"));
+	                htmlsource=parseResponse(entity1, StaticValue.defaultencoding);
+	                System.out.println(htmlsource);
+	                EntityUtils.consume(entity1);
+	                
+	            } finally {
+	                response1.close();
+	            }        
+	        }
+	          
+	         finally {
+	            httpclient.close();
+	        }
+	        return htmlsource;
+	}
 	public static void main(String[] args) throws Exception {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        try {
-//        	String url="http://news.youth.cn/gn/";
-        	String url="https://www.baidu.com/";
-//        	String url="https://www.163.com/";
-            HttpGet httpGet = new HttpGet(url);
-            CloseableHttpResponse response1 = httpclient.execute(httpGet);
-            try {
-                System.out.println(response1.getStatusLine());
-                HttpEntity entity1 = response1.getEntity();
-                // do something useful with the response body
-                // and ensure it is fully consumed 
-//                byte[] byteBuffer=IOUtil.convertInputStreamToByteArray(entity1.getContent());
-//                System.out.println(new String(byteBuffer,"gbk"));
-//                WebCharsetDetectorUtil.getCharsetHttpClient(entity1, StaticValue.defaultencoding);
-//                System.out.println(EntityUtils.toString(entity1,"gbk"));
-                String htmlsource=parseResponse(entity1, StaticValue.defaultencoding);
-                System.out.println(htmlsource);
-                EntityUtils.consume(entity1);
-                
-            } finally {
-                response1.close();
-            }        
-        }
-          
-         finally {
-            httpclient.close();
-        }
+		String url="http://news.youth.cn/gn/";
+//    	String url="https://www.baidu.com/";
+//    	String url="https://www.163.com/";
+		String htmlsource=download(url);
+		System.out.println(htmlsource);
         }
 }
