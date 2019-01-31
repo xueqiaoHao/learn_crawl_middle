@@ -28,8 +28,9 @@ import org.apache.http.util.EntityUtils;
 @date 2019年1月14日下午9:46:20
 **/
 public class WebpageDownloadUtil4HttpClient {
-	static String meta_charset_regex="charset=[\"]*([\\s\\S]*?)[\">]";
+	
 	public static String parseResponse(HttpEntity entity,String defaultCharset) throws IOException {
+		
 		  String findCharset=null;
 		//将流儿转化为字符数组
 		  byte[] contentByteArray=IOUtil.convertInputStreamToByteArray(entity.getContent());
@@ -46,7 +47,7 @@ public class WebpageDownloadUtil4HttpClient {
 					//将读出来的内容转出小写
 					line=line.trim().toLowerCase();
 					if(line.contains("<meta")){
-					findCharset=RegexUtil.getMatchText(line, meta_charset_regex, 1);
+					findCharset=RegexUtil.getMatchText(line, StaticValue.meta_charset_regex, 1);
 					if(findCharset!=null){
 //						System.out.println("find_at_meta");
 						break;
@@ -59,14 +60,6 @@ public class WebpageDownloadUtil4HttpClient {
 					
 				}
 				br.close();
-//				if(findCharset!=null&&findCharset!=defaultCharset) {
-//				{
-//					  return new String(contentByteArray,findCharset);
-//				}
-//				
-//		  } else {
-//			  return new String(contentByteArray,findCharset);
-//		  }
 		  }
 		  //无论如何都得有个编码
 		  findCharset=(findCharset==null ? defaultCharset:findCharset);
@@ -85,16 +78,10 @@ public class WebpageDownloadUtil4HttpClient {
 	            HttpGet httpGet = new HttpGet(url);
 	            CloseableHttpResponse response1 = httpclient.execute(httpGet);
 	            try {
-	                System.out.println(response1.getStatusLine());
+//	                System.out.println(response1.getStatusLine());
 	                HttpEntity entity1 = response1.getEntity();
-	                // do something useful with the response body
-	                // and ensure it is fully consumed 
-//	                byte[] byteBuffer=IOUtil.convertInputStreamToByteArray(entity1.getContent());
-//	                System.out.println(new String(byteBuffer,"gbk"));
-//	                WebCharsetDetectorUtil.getCharsetHttpClient(entity1, StaticValue.defaultencoding);
-//	                System.out.println(EntityUtils.toString(entity1,"gbk"));
 	                htmlsource=parseResponse(entity1, StaticValue.defaultencoding);
-	                System.out.println(htmlsource);
+//	                System.out.println(htmlsource);
 	                EntityUtils.consume(entity1);
 	                
 	            } finally {

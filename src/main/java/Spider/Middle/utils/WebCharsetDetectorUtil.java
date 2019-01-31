@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -19,12 +20,10 @@ import org.apache.http.util.EntityUtils;
 **/
 public class WebCharsetDetectorUtil {
 	static String meta_charset_regex="charset=[\"]*([\\s\\S]*?)[\">]";
-	public static String getCharset(String url) throws IOException{
-		String findCharset=null;
-		URL urlObj=new URL(url);
-		URLConnection urlconnection=urlObj.openConnection();
-		Map<String,List<String>> headerMap=urlconnection.getHeaderFields();
+	public static String getCharsetByHttpHeader(URLConnection urlConnection) {
+		Map<String,List<String>> headerMap=urlConnection.getHeaderFields();
 		Set<String> keyset=headerMap.keySet();
+		String findCharset=null;
 		//先在http-header中找
 		for(String key:keyset){
 			if(key!=null&&key.equalsIgnoreCase("Content-Type")){
@@ -36,10 +35,43 @@ public class WebCharsetDetectorUtil {
 				String[] charsetArray=valueArray[1].trim().split("=");
 				if(charsetArray.length==2){
 					findCharset=charsetArray[1];
+					break;
 				}
 				
 			}
 				}
+			}
+		return findCharset;
+	}
+	public static String getCharsetByhtmlSource(String htmlSource) throws IOException {
+		//将字符串封装为Reader
+		  StringReader sr=new StringReader(htmlSource);
+		  BufferedReader br=new BufferedReader(sr); 
+			String line=null;
+			String findCharset=null;
+			while((line=br.readLine())!=null){
+				//将读出来的内容转出小写
+				line=line.trim().toLowerCase();
+				if(line.contains("<meta")){
+					findCharset=RegexUtil.getMatchText(line, StaticValue.meta_charset_regex, 1);
+				if(findCharset!=null){
+//					System.out.println("find_at_meta");
+					break;
+				}
+				}
+				//charset一定在head中，如果在head中没有找到，那就是没有，就不要再找了
+				else if(line.contains("</head>")){
+					break;
+				}
+				
+			}
+			br.close();
+			return findCharset; 
+	}
+	public static String getCharset(String url) throws IOException{
+		String findCharset=null;
+		URLConnection urlconnection=IOUtil.getUrlConnection(url);
+		findCharset=getCharsetByHttpHeader(urlconnection);
 		//如果httpheader中找不到charset的话
 		if(findCharset==null){
 			BufferedReader br=IOUtil.getURLBufferedReader(urlconnection, StaticValue.defaultencoding);
@@ -63,7 +95,7 @@ public class WebCharsetDetectorUtil {
 			br.close();
 		}
 		
-	}
+	
 		return findCharset;
 	}
 	public static String getCharsetHttpClient(HttpEntity entity,String defaultCharset) throws IOException {

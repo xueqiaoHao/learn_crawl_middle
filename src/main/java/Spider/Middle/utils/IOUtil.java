@@ -37,9 +37,13 @@ public class IOUtil {
 		br.close();
 		return lineList;
 	}
-	public static BufferedReader getbr(String url,String charset) throws IOException{
+	public static URLConnection getUrlConnection(String url) throws IOException {
 		URL urlObj=new URL(url);
 		URLConnection urlconnection=urlObj.openConnection();
+		return urlconnection;
+	}
+	public static BufferedReader getbr(String url,String charset) throws IOException{
+		URLConnection urlconnection=getUrlConnection(url);
 		BufferedReader br=getURLBufferedReader(urlconnection, charset);
 		return br;
 	}

@@ -17,4 +17,6 @@ public class StaticValue {
 	public static String sep_semicolon=";";
 	
 	public static String sep_equals="=";
+	
+	public static String meta_charset_regex="charset=[\"]*([\\s\\S]*?)[\">]";
 }
