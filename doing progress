@@ -28,5 +28,5 @@
 		1、 UIManager，以及产生taskpojo的位置-parser解析完之后，就会产生
 		2、消费者：DownLoadRunnable
 		3、缓冲池-资源池：TaskSchedule
-	  完成了downloadManager中几个线程的开启执行和关闭 -v30
-	  change
+	  完成了downloadManager中几个线程的开启执行和关闭 
+2-1  完善了downloadmanager类，将原有的功能封装为一个一个的方法，后续学习如何读取配置文件
