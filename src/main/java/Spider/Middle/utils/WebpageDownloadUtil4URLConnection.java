@@ -1,12 +1,6 @@
 package Spider.Middle.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLConnection;
 
 /**
@@ -36,21 +30,6 @@ public class WebpageDownloadUtil4URLConnection {
 			  htmlSource=new String(contentByteArray,findCharset);
 		  }
 		  return htmlSource;
-//		charset=WebCharsetDetectorUtil.getCharset(url);
-//		System.out.println(charset);
-//		BufferedReader br=IOUtil.getbr(url, charset);
-//		int linecounter=0;
-//		StringBuilder stringbuilder=new StringBuilder();
-//		String line=null;
-//		while((line=br.readLine())!=null){
-//			if(linecounter>0){
-//				stringbuilder.append(StaticValue.sep_next_line);
-//			}
-//			stringbuilder.append(line);
-//			linecounter++;
-//		}
-//		br.close();
-//		return stringbuilder.toString();
 	}
 	public static void main(String[] args) throws IOException {
 		String url="http://news.youth.cn/gn/";

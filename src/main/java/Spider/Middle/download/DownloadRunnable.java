@@ -8,6 +8,7 @@ import Spider.Middle.ui.UIManager;
 
 import Spider.Middle.pojos.UrlTaskPojo;
 import Spider.Middle.schedule.TaskScheduleManager;
+import Spider.Middle.utils.SystemConfigParas;
 import Spider.Middle.utils.WebpageDownloadUtil4HttpClient;
 
 /**
@@ -42,9 +43,9 @@ public class DownloadRunnable implements Runnable{
 				}
 				
 			}else {
-				log.info(this.name+"没有待采集的任务，线程将等待2s");
+				log.info(this.name+"没有待采集的任务，线程将等待"+SystemConfigParas.once_sleep_time_for_empty_task/1000+"s");
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(SystemConfigParas.once_sleep_time_for_empty_task);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
