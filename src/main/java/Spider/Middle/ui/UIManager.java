@@ -1,9 +1,9 @@
 package Spider.Middle.ui;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
+import Spider.Middle.download.DownloadManager;
 import Spider.Middle.pojos.UrlTaskPojo;
 import Spider.Middle.schedule.TaskScheduleManager;
 import Spider.Middle.utils.IOUtil;
@@ -51,8 +51,9 @@ public class UIManager {
 		
 	}
 	public static void main(String[] args) throws Exception {
+		//第一步、启动uimanager，注入种子任务
 		addSeedUrlToTaskSchedule();
-		System.out.println(TaskScheduleManager.todoTaskPojoList.size());
-		System.out.println("种子任务已添加到任务管理器中");
+		//第二步、启动下载线程，并在内完成解析工作
+		DownloadManager.start();
 	}
 }

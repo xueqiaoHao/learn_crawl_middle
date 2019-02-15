@@ -1,12 +1,15 @@
 package Spider.Middle.download;
 
-import java.io.IOException;
+
+
+import java.util.List;
 
 import org.apache.log4j.Logger;
-
 import Spider.Middle.ui.UIManager;
-
+import Spider.Middle.iface.download.DownloadInterface;
+import Spider.Middle.parser.HtmlParserManager;
 import Spider.Middle.pojos.UrlTaskPojo;
+import Spider.Middle.pojos.entity.NewsItemEntity;
 import Spider.Middle.schedule.TaskScheduleManager;
 import Spider.Middle.utils.SystemConfigParas;
 import Spider.Middle.utils.WebpageDownloadUtil4HttpClient;
@@ -17,7 +20,7 @@ import Spider.Middle.utils.WebpageDownloadUtil4HttpClient;
 */
 public class DownloadRunnable implements Runnable{
 	//使用log4j
-	Logger log=Logger.getLogger(DownloadRunnable.class);
+	Logger logger=Logger.getLogger(DownloadRunnable.class);
 	
 	private String name;
 	private boolean enableRunningFlag=true;
@@ -27,23 +30,31 @@ public class DownloadRunnable implements Runnable{
 			UrlTaskPojo taskPojo=TaskScheduleManager.take();
 			if(taskPojo!=null) {
 				try {
-					String htmlSource=WebpageDownloadUtil4HttpClient.download(taskPojo.getUrl());
+					//第一步、先进行下载
+					DownloadInterface download=new WebpageDownloadUtil4HttpClient();
+					String htmlSource=download.download(taskPojo.getUrl());
 					if(htmlSource!=null) {
-						//第一步、打印下载出来的数据
+						
 						//	System.out.println(htmlSource);
 						//第二步、进入解析环节
-						log.info(this.name+"进入解析环节");
+						logger.info(this.name+"进入解析环节");
+						//解析
+						List<NewsItemEntity> newsItemEntityList=HtmlParserManager.parserHtmlSource(htmlSource);
+						for (NewsItemEntity newsItemEntity : newsItemEntityList) {
+							System.out.println(newsItemEntity);
+						}
+						logger.info("本页下载解析完成，将进入下一页");
 					}
 					else {
-						log.info(this.name+"下载出错");
+						logger.info(this.name+"下载出错");
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 			}else {
-				log.info(this.name+"没有待采集的任务，线程将等待"+SystemConfigParas.once_sleep_time_for_empty_task/1000+"s");
+				logger.info(this.name+"没有待采集的任务，线程将等待"+SystemConfigParas.once_sleep_time_for_empty_task/1000+"s");
 				try {
 					Thread.sleep(SystemConfigParas.once_sleep_time_for_empty_task);
 				} catch (InterruptedException e) {
@@ -51,11 +62,11 @@ public class DownloadRunnable implements Runnable{
 					e.printStackTrace();
 				}
 				
-				log.info(this.name+"本次睡眠结束");
+				logger.info(this.name+"本次睡眠结束");
 			}
 					}
 			enableRunningFlag=false;
-			log.info(this.name+"线程run方法即将结束");
+			logger.info(this.name+"线程run方法即将结束");
 		
 	}
 	

@@ -14,15 +14,18 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 
+import Spider.Middle.iface.download.DownloadInterface;
+
+
 
 
 /**
 @author hao
 @date 2019年1月14日下午9:46:20
 **/
-public class WebpageDownloadUtil4HttpClient {
+public class WebpageDownloadUtil4HttpClient implements DownloadInterface{
 	
-	public static String parseResponse(HttpEntity entity,String defaultCharset) throws IOException {
+	public static String parseEntity(HttpEntity entity,String defaultCharset) throws IOException {
 		
 		  String findCharset=null;
 		//将流儿转化为字符数组
@@ -63,35 +66,41 @@ public class WebpageDownloadUtil4HttpClient {
 	}
 	
 	//封装httpclient自己的download方法
-	public static String download(String url) throws IOException {
-		 CloseableHttpClient httpclient = HttpClients.createDefault();
-		 String htmlsource=null;  
-		 try {
-	        	
-	            HttpGet httpGet = new HttpGet(url);
-	            CloseableHttpResponse response1 = httpclient.execute(httpGet);
-	            try {
-//	                System.out.println(response1.getStatusLine());
-	                HttpEntity entity1 = response1.getEntity();
-	                htmlsource=parseResponse(entity1, StaticValue.defaultencoding);
-//	                System.out.println(htmlsource);
-	                EntityUtils.consume(entity1);
-	                
-	            } finally {
-	                response1.close();
-	            }        
-	        }
-	          
-	         finally {
-	            httpclient.close();
-	        }
-	        return htmlsource;
+	public static String downloadStatic(String url) throws IOException {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		String htmlSource = null;
+		try {
+			HttpGet httpGet = new HttpGet(url);
+			CloseableHttpResponse response1 = httpclient.execute(httpGet);
+			try {
+				HttpEntity entity1 = response1.getEntity();
+				htmlSource = parseEntity(entity1, StaticValue.defaultencoding);
+				EntityUtils.consume(entity1);
+			} finally {
+				response1.close();
+			}
+		} finally {
+			httpclient.close();
+		}
+		return htmlSource;
+	}
+
+	@Override
+	public String download(String url) {
+		try {
+			return downloadStatic(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	public static void main(String[] args) throws Exception {
-		String url="http://news.youth.cn/gn/";
+//		String url="http://news.youth.cn/gn/";
 //    	String url="https://www.baidu.com/";
-//    	String url="https://www.163.com/";
-		String htmlsource=download(url);
+    	String url="https://tieba.baidu.com/f?ie=utf-8&kw=%E9%80%9A%E4%BF%A1%E5%90%A7&fr=search";
+		DownloadInterface download=new WebpageDownloadUtil4HttpClient();
+		String htmlsource=download.download(url);
 		System.out.println(htmlsource);
         }
 }
